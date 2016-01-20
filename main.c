@@ -29,7 +29,8 @@
 #define MY_MAC_4	0x18
 #define MY_MAC_5	0x00
 
-void btLeCrc(const uint8_t* data, uint8_t len, uint8_t* dst){
+void btLeCrc(const uint8_t* data, uint8_t len, uint8_t* dst)
+{
 	uint8_t v, t, d;
 
 	while(len--){
@@ -56,7 +57,8 @@ void btLeCrc(const uint8_t* data, uint8_t len, uint8_t* dst){
 	}
 }
 
-uint8_t swapbits(uint8_t a){
+uint8_t swapbits(uint8_t a)
+{
 	uint8_t v = 0;
 
 	if(a & 0x80) v |= 0x01;
@@ -71,7 +73,8 @@ uint8_t swapbits(uint8_t a){
 	return v;
 }
 
-void btLeWhiten(uint8_t* data, uint8_t len, uint8_t whitenCoeff){
+void btLeWhiten(uint8_t* data, uint8_t len, uint8_t whitenCoeff)
+{
 	uint8_t  m;
 
 	while(len--){
@@ -86,12 +89,14 @@ void btLeWhiten(uint8_t* data, uint8_t len, uint8_t whitenCoeff){
 	}
 }
 
-static inline uint8_t btLeWhitenStart(uint8_t chan){
+static inline uint8_t btLeWhitenStart(uint8_t chan)
+{
 	//the value we actually use is what BT'd use left shifted one...makes our life easier
 	return swapbits(chan) | 2;
 }
 
-void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan){
+void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan)
+{
 	//length is of packet, including crc. pre-populate crc in packet with initial crc value!
 	uint8_t i, dataLen = len - 3;
 
@@ -106,7 +111,8 @@ void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan){
 		packet[i] = swapbits(packet[i]);
 }
 
-void spi_byte(uint8_t byte){
+void spi_byte(uint8_t byte)
+{
   USIDR = byte; // write byte to the USI register
   USISR = (1<<USIOIF); // clear the USI counter overflow flag
 
