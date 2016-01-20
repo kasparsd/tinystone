@@ -160,7 +160,7 @@ int main(void)
 	static const uint8_t chLe[] = {37,38,39}; // 2402 MHz, 2426 MHz, and 2480 MHz
 	static const uint8_t chRf[] = {2,26,80}; // F0 = 2400 + RF_CH [MHz]
 
-	uint8_t i, L, ch = 0;
+	uint8_t i, L, ch, plen = 0;
 	uint8_t buf[32];
 
 	ports_setup();
@@ -205,13 +205,14 @@ int main(void)
 
 		PORTA |= (1<<PIN_LED); // Turn on LED
 
-		L = 0;
+		// Create our ADV_NONCONN_IND packet
+		// 2 byte header + 6 byte address + 3 byte LE header + 4 byte Eddystone header + 17 byte payload
 
-		// Create our ADV_NONCONN_IND packet:
-		// 2 byte header + 6 byte address + 21 byte payload
+		L = 0;
+		plen = 9; // Payload length, MAC + BLE header by default
 
 		buf[L++] = 0x42; // PDU type, ADV_NONCONN_IND
-		buf[L++] = 17; // 17 bytes of payload
+		buf[L++] = plen; // Default length of payload, update later
 
 		buf[L++] = MY_MAC_0;
 		buf[L++] = MY_MAC_1;
@@ -220,28 +221,40 @@ int main(void)
 		buf[L++] = MY_MAC_4;
 		buf[L++] = MY_MAC_5;
 
-		// LE-only , limited discovery
-		buf[L++] = 2; // chunk size: 2
-		buf[L++] = 0x01; // chunk type: device flags
-		buf[L++] = 0x05; // flags (LE-only, limited discovery mode)
+		// Flags. CSS v5, Part A, § 1.3
+		buf[L++] = 0x02; // Length
+		buf[L++] = 0x01; // Flags data type value
+		buf[L++] = 0x06; // Flags data
 
-		buf[L++] = 7;
-		buf[L++] = 0x08;
-		buf[L++] = 'K';
-		buf[L++] = 'i';
-		buf[L++] = 'F';
-		buf[L++] = ' ';
-		buf[L++] = 'K';
-		buf[L++] = 'D';
+		// Length of Eddystone service + frame packet
+		plen += 4 + 14;
 
-		// ... insert more data here
-		//buf[L++] = 2; // length of custom data, including type byte
-		//buf[L++] = 0xff; // TYPE_CUSTOMDATA
-		//buf[L++] = 8;
+		buf[L++] = 17; // Length of service data
+		buf[L++] = 0x16; // Service Data data type value
+		buf[L++] = 0xAA; // 16-bit Eddystone UUID
+		buf[L++] = 0xFE; // ..
+		buf[L++] = 0x10; // Frame Type: URL
+		buf[L++] = 0x00; // TX Power
+		buf[L++] = 0x02; // URL Scheme
+		buf[L++] = 'k';
+		buf[L++] = 'a';
+		buf[L++] = 's';
+		buf[L++] = 'p';
+		buf[L++] = 'a';
+		buf[L++] = 'r';
+		buf[L++] = 's';
+		buf[L++] = 0x03; // extension
+		buf[L++] = 'n';
+		buf[L++] = 'o';
+		buf[L++] = 'w';
 
-		buf[L++] = 0x55; // CRC start value: 0x555555
+		// CRC start value: 0x555555
 		buf[L++] = 0x55;
 		buf[L++] = 0x55;
+		buf[L++] = 0x55;
+
+		// Update the packet length
+		buf[1] = plen;
 
 		// Add CRC and whitten the packet
 		btLePacketEncode(buf, L, chLe[ch]);
