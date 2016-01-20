@@ -143,11 +143,11 @@ void nrf_manybytes(uint8_t* data, uint8_t len)
 
 void ports_setup(void)
 {
-  // Configure USI: three wire mode | external positive edge| software clock strobe
-  // USICR |= (1<<USIWM0)|(1<<USICS1)|(1<<USICLK);
+	// Configure USI: three wire mode | external positive edge| software clock strobe
+	// USICR |= (1<<USIWM0)|(1<<USICS1)|(1<<USICLK);
 
-  // Set SCN, CE, LED, SCK and USI DO pins as output
-  DDRA |= (1<<PIN_nCS)|(1<<PIN_CE)|(1<<PIN_LED)|(1<<PIN_SCK)|(1<<PIN_DO);
+	// Set SCN, CE, LED, SCK and USI DO pins as output
+	DDRA |= (1<<PIN_nCS)|(1<<PIN_CE)|(1<<PIN_LED)|(1<<PIN_SCK)|(1<<PIN_DO);
 
 	TCCR0A = (1<<CS00); // clock select
 
