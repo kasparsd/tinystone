@@ -106,16 +106,15 @@ void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan){
 		packet[i] = swapbits(packet[i]);
 }
 
-uint8_t spi_byte(uint8_t byte){
+void spi_byte(uint8_t byte){
   USIDR = byte; // write byte to the USI register
   USISR = (1<<USIOIF); // clear the USI counter overflow flag
 
   while (!(USISR & (1<<USIOIF))){ // while no clock overflow
 	USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
+	// or define the above in the config and run only:
 	//USICR |= (1<<USITC); // toggle clock pin (send bit)
   }
-
-  return USIDR; // return USI data received
 }
 
 void nrf_cmd(uint8_t cmd, uint8_t data)
@@ -150,20 +149,17 @@ void ports_setup(void)
 	// Set SCN, CE, LED, SCK and USI DO pins as output
 	DDRA |= (1<<PIN_nCS)|(1<<PIN_CE)|(1<<PIN_LED)|(1<<PIN_SCK)|(1<<PIN_DO);
 
-	TCCR0A = (1<<CS00); // clock select
-
 	cbi(PORTA, PIN_CE); // Clear CE, turn off RX and TX
 	sbi(PORTA, PIN_nCS); // Set CSN
 }
 
 int main(void)
 {
-	//static const uint8_t chLe[] = {37,38,39}; // 2402 MHz, 2426 MHz, and 2480 MHz
+	static const uint8_t chLe[] = {37,38,39}; // 2402 MHz, 2426 MHz, and 2480 MHz
 	static const uint8_t chRf[] = {2,26,80}; // F0 = 2400 + RF_CH [MHz]
 
 	uint8_t i, L, ch = 0;
 	uint8_t buf[32];
-	uint8_t deb[32];
 
 	ports_setup();
 
@@ -191,11 +187,6 @@ int main(void)
 	// STATUS: Clear TX_DS and MAX_RT
 	nrf_cmd(0x07, 0x3E);
 
-	//nrf_cmd(0x11, 0x20);	// RX_PW_P0: always RX 32 bytes
-	//nrf_cmd(0x11, 0x00);	// RX_PW_P0: set RX_PW_P0=0 (not used)
-	//nrf_cmd(0x1C, 0x00);	// DYNPD: no dynamic payloads
-	//nrf_cmd(0x1D, 0x00);	// FEATURE: no features
-
 	// Set TX address always, 0x8E89BED6 or "Bed6" for advertising packets
 	buf[0] = 0x10 + 0x20; // 0x20 padding to specify the write register
 	buf[1] = swapbits(0x8E);
@@ -218,7 +209,7 @@ int main(void)
 		// 2 byte header + 6 byte address + 21 byte payload
 
 		buf[L++] = 0x40; // PDU type, ADV_NONCONN_IND.
-		buf[L++] = 11; // 17 bytes of payload minus 6 bytes for MAC
+		buf[L++] = 17; // 17 bytes of payload
 
 		buf[L++] = MY_MAC_0;
 		buf[L++] = MY_MAC_1;
@@ -234,12 +225,12 @@ int main(void)
 
 		buf[L++] = 7;
 		buf[L++] = 0x08;
-		buf[L++] = 'n';
+		buf[L++] = 'K';
 		buf[L++] = 'R';
 		buf[L++] = 'F';
 		buf[L++] = ' ';
-		buf[L++] = 'L';
-		buf[L++] = 'E';
+		buf[L++] = 'K';
+		buf[L++] = 'D';
 
 		// ... insert more data here
 		//buf[L++] = 2; // length of custom data, including type byte
@@ -250,11 +241,8 @@ int main(void)
 		buf[L++] = 0x55;
 		buf[L++] = 0x55;
 
-		// Channel hopping
-		//if (++ch == sizeof(chRf))
-		//	ch = 0;
-
-		btLePacketEncode(buf, L, chRf[ch]);
+		// Add CRC and whitten the packet
+		btLePacketEncode(buf, L, chLe[ch]);
 
 		nrf_cmd(0x05, chRf[ch]); // set the channel, loop through chRf
 		nrf_cmd(0x07, 0x6E); // clear flags
@@ -276,7 +264,13 @@ int main(void)
 		cbi(PORTA, PIN_CE); // Clear CE
 
 		PORTA &= ~(1<<PIN_LED); // Turn off LED
-		_delay_ms(100);
+
+		// Channel hopping
+		if (++ch == sizeof(chRf))
+		{
+			ch = 0;
+			_delay_ms(500);
+		}
 
 	}
 
