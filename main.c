@@ -5,36 +5,6 @@
 #define F_CPU	8000000
 #include <util/delay.h>
 
-/*
-	In parallel to the SPI command word applied on the MOSI pin, the STATUS
-	register is shifted serially out on the MISO pin.
-
-	BLE packet format:
-	[ Preamble 1 byte | Access Address 4 bytes | Payload 2-39 bytes | CRC 3 bytes ]
-
-		where Payload:
-		[ Header 2 bytes | Payload <= 37 bytes ]
-
-			where Header:
-			[ PDU type 4 bits | RFU 2 bits | TxAdd 1 bit | RxAdd 1 bit | Length 6 bits | RFU 6 bits ]
-
-			where Payload:
-			[ Broadcast Address 6 bytes | Broadcast Data 0 - 31 bytes ]
-
-	Notes:
-	-	Preamble is always 0xAA for broadcasted packets
-	- Address is always 0x8E89BED6 for broadcastes packets
-	- PDU Types:
-		* 0000 ADV_IND - Connectable undirected advertising event
-		* 0010 ADV_NONCONN_IND - Non-connectable undirected advertising event
-		* 0110 ADV_SCAN_IND - Scannable undirected advertising event
-
-	ShockBurst packet format (non-Enhanced):
-	[ Preamble 1 byte | Address 3-5 byte | Payload 1-32 byte | CRC 1-2 byte ]
-
-	Set the register EN_AA = 0x00 and ARC = 0 to disable Enhanced ShockBurst.
-*/
-
 // @todo replace these with something nice
 // Clear Bit
 #ifndef cbi
@@ -68,12 +38,12 @@ void btLeCrc(const uint8_t* data, uint8_t len, uint8_t* dst){
 			dst[0] <<= 1;
 
 			if(dst[1] & 0x80)
-        dst[0] |= 1;
+		dst[0] |= 1;
 
 			dst[1] <<= 1;
 
 			if(dst[2] & 0x80)
-        dst[1] |= 1;
+		dst[1] |= 1;
 
 			dst[2] <<= 1;
 
@@ -127,12 +97,12 @@ void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan){
 	btLeCrc(packet, dataLen, packet + dataLen);
 
 	for(i = 0; i < 3; i++, dataLen++)
-    packet[dataLen] = swapbits(packet[dataLen]);
+	packet[dataLen] = swapbits(packet[dataLen]);
 
 	btLeWhiten(packet, len, btLeWhitenStart(chan));
 
 	for(i = 0; i < len; i++)
-    packet[i] = swapbits(packet[i]);
+	packet[i] = swapbits(packet[i]);
 }
 
 uint8_t spi_byte(uint8_t byte){
@@ -140,8 +110,8 @@ uint8_t spi_byte(uint8_t byte){
   USISR = (1<<USIOIF); // clear the USI counter overflow flag
 
   while (!(USISR & (1<<USIOIF))){ // while no clock overflow
-    USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
-    //USICR |= (1<<USITC); // toggle clock pin (send bit)
+	USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
+	//USICR |= (1<<USITC); // toggle clock pin (send bit)
   }
 
   return USIDR; // return USI data received
@@ -230,7 +200,8 @@ int main(void)
 	nrf_manybytes(buf, 5);
 
 	while(1){
-    PORTA |= (1<<PIN_LED); // Turn on LED
+
+		PORTA |= (1<<PIN_LED); // Turn on LED
 
 		L = 0;
 
@@ -238,7 +209,7 @@ int main(void)
 		// 2 byte header + 6 byte address + 21 byte payload
 
 		buf[L++] = 0x40; // PDU type, ADV_NONCONN_IND.
-    buf[L++] = 11; // 17 bytes of payload minus 6 bytes for MAC
+		buf[L++] = 11; // 17 bytes of payload minus 6 bytes for MAC
 
 		buf[L++] = MY_MAC_0;
 		buf[L++] = MY_MAC_1;
@@ -272,7 +243,7 @@ int main(void)
 
 		// Channel hopping
 		if (++ch == sizeof(chRf))
-      ch = 0;
+			ch = 0;
 
 		nrf_cmd(0x05, chRf[ch]); // set the channel, loop through chRf
 		nrf_cmd(0x07, 0x6E);	// clear flags
@@ -287,7 +258,7 @@ int main(void)
 		cbi(PORTA, PIN_nCS);
 		spi_byte(0xA0); // W_TX_PAYLOAD
 		for(i = 0 ; i < L ; i++)
-      spi_byte(buf[i]);
+			spi_byte(buf[i]);
 		sbi(PORTA, PIN_nCS);
 
 		nrf_cmd(0x00, 0x12); // TX on
@@ -304,8 +275,8 @@ int main(void)
 		//spi_byte(0x00); // read the RESPONSE
 		//sbi(PORTA, PIN_nCS);
 
-    PORTA &= ~(1<<PIN_LED); // Turn off LED
-    _delay_ms(100);
+		PORTA &= ~(1<<PIN_LED); // Turn off LED
+		_delay_ms(100);
 
 	}
 
