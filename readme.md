@@ -1,5 +1,8 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
+
+## BLE Advertising Packet Format
+
 BLE packet format:
 
 	Preamble 1 byte | Access Address 4 bytes | Payload 2-39 bytes | CRC 3 bytes
@@ -17,7 +20,7 @@ where Payload:
 	Broadcast Address 6 bytes | Broadcast Data 0 - 31 bytes
 
 
-# Notes on BLE Advertising Packets
+### Notes on BLE Advertising Packets
 
 - Preamble is always `0xAA` for broadcast packets
 
@@ -37,3 +40,8 @@ where Payload:
 - We need to use the _non-Enhanced_ ShockBurst packet format to mimic the BLE packets. Set the register `EN_AA = 0x00` and `ARC = 0` to disable Enhanced ShockBurst.
 
 		Preamble 1 byte | Address 3-5 byte | Payload 1-32 byte | CRC 1-2 byte
+
+
+## Credits
+
+[Kaspars Dambis](http://kaspars.net)) based on the work by [Dmitry Grinberg](http://dmitry.gr) described in [Faking Bluetooth LE](http://dmitry.gr/index.php?r=05.Projects&proj=11.%20Bluetooth%20LE%20fakery).
