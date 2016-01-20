@@ -112,8 +112,6 @@ void spi_byte(uint8_t byte){
 
   while (!(USISR & (1<<USIOIF))){ // while no clock overflow
 	USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
-	// or define the above in the config and run only:
-	//USICR |= (1<<USITC); // toggle clock pin (send bit)
   }
 }
 
@@ -143,9 +141,6 @@ void nrf_manybytes(uint8_t* data, uint8_t len)
 
 void ports_setup(void)
 {
-	// Configure USI: three wire mode | external positive edge| software clock strobe
-	// USICR |= (1<<USIWM0)|(1<<USICS1)|(1<<USICLK);
-
 	// Set SCN, CE, LED, SCK and USI DO pins as output
 	DDRA |= (1<<PIN_nCS)|(1<<PIN_CE)|(1<<PIN_LED)|(1<<PIN_SCK)|(1<<PIN_DO);
 
@@ -155,6 +150,7 @@ void ports_setup(void)
 
 int main(void)
 {
+	// Map nRF to BLE address space
 	static const uint8_t chLe[] = {37,38,39}; // 2402 MHz, 2426 MHz, and 2480 MHz
 	static const uint8_t chRf[] = {2,26,80}; // F0 = 2400 + RF_CH [MHz]
 
@@ -208,7 +204,7 @@ int main(void)
 		// Create our ADV_NONCONN_IND packet:
 		// 2 byte header + 6 byte address + 21 byte payload
 
-		buf[L++] = 0x40; // PDU type, ADV_NONCONN_IND.
+		buf[L++] = 0x42; // PDU type, ADV_NONCONN_IND
 		buf[L++] = 17; // 17 bytes of payload
 
 		buf[L++] = MY_MAC_0;
@@ -226,7 +222,7 @@ int main(void)
 		buf[L++] = 7;
 		buf[L++] = 0x08;
 		buf[L++] = 'K';
-		buf[L++] = 'R';
+		buf[L++] = 'i';
 		buf[L++] = 'F';
 		buf[L++] = ' ';
 		buf[L++] = 'K';
