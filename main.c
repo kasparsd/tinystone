@@ -155,14 +155,6 @@ void ports_setup(void)
 	sbi(PORTA, PIN_nCS); // Set CSN
 }
 
-void blink(void)
-{
-  _delay_ms(100);
-  PORTA |= (1<<PIN_LED);
-  _delay_ms(100);
-  PORTA &= ~(1<<PIN_LED);
-}
-
 int main(void)
 {
 	//static const uint8_t chLe[] = {37,38,39}; // 2402 MHz, 2426 MHz, and 2480 MHz
