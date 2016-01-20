@@ -227,26 +227,20 @@ int main(void)
 		buf[L++] = 0x06; // Flags data
 
 		// Length of Eddystone service + frame packet
-		plen += 4 + 14;
+		plen += 12;
 
-		buf[L++] = 17; // Length of service data
+		buf[L++] = 11; // Length of service data
 		buf[L++] = 0x16; // Service Data data type value
 		buf[L++] = 0xAA; // 16-bit Eddystone UUID
 		buf[L++] = 0xFE; // ..
 		buf[L++] = 0x10; // Frame Type: URL
 		buf[L++] = 0x00; // TX Power
-		buf[L++] = 0x02; // URL Scheme
-		buf[L++] = 'k';
-		buf[L++] = 'a';
+		buf[L++] = 0x03; // URL Scheme, https://
+		buf[L++] = 'e';
+		buf[L++] = 'd';
 		buf[L++] = 's';
-		buf[L++] = 'p';
-		buf[L++] = 'a';
-		buf[L++] = 'r';
-		buf[L++] = 's';
-		buf[L++] = 0x03; // extension
-		buf[L++] = 'n';
-		buf[L++] = 'o';
-		buf[L++] = 'w';
+		buf[L++] = 't';
+		buf[L++] = 0x0b; // Domain extension, .info
 
 		// CRC start value: 0x555555
 		buf[L++] = 0x55;
