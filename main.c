@@ -17,6 +17,7 @@
 
 #define PIN_CE	PA1 // CE
 #define PIN_nCS	PA2 // CSN
+#define PIN_IRQ PA3 // IRQ
 #define PIN_SCK PA4 // SCK
 #define PIN_DO  PA5 // USI DO or MISO
 #define PIN_LED PA7 // status LED
@@ -38,12 +39,12 @@ void btLeCrc(const uint8_t* data, uint8_t len, uint8_t* dst){
 			dst[0] <<= 1;
 
 			if(dst[1] & 0x80)
-		dst[0] |= 1;
+				dst[0] |= 1;
 
 			dst[1] <<= 1;
 
 			if(dst[2] & 0x80)
-		dst[1] |= 1;
+				dst[1] |= 1;
 
 			dst[2] <<= 1;
 
@@ -97,12 +98,12 @@ void btLePacketEncode(uint8_t* packet, uint8_t len, uint8_t chan){
 	btLeCrc(packet, dataLen, packet + dataLen);
 
 	for(i = 0; i < 3; i++, dataLen++)
-	packet[dataLen] = swapbits(packet[dataLen]);
+		packet[dataLen] = swapbits(packet[dataLen]);
 
 	btLeWhiten(packet, len, btLeWhitenStart(chan));
 
 	for(i = 0; i < len; i++)
-	packet[i] = swapbits(packet[i]);
+		packet[i] = swapbits(packet[i]);
 }
 
 uint8_t spi_byte(uint8_t byte){
@@ -166,14 +167,30 @@ int main(void)
 
 	ports_setup();
 
-	// Configure module, must be in power down or standy mode
-	nrf_cmd(0x00, 0x12);	// CONFIG: MASK_RX_DR=0, MASK_TX_DS=0, MASK_MAX_RT=1, EN_CRC=0, EN_CRC=0, PWR_UP=1, PRIM_RX=0
-	nrf_cmd(0x01, 0x00);	// EN_AA: no auto-acknowledge
-	nrf_cmd(0x02, 0x00);	// EN_RXADDR: RX on pipe 0
-	nrf_cmd(0x03, 0x02);	// SETUP_AW: use a 4 byte address (default is 5 bytes)
-	nrf_cmd(0x04, 0x00);	// SETUP_RETR: no auto-retransmit (ARC=0)
-	nrf_cmd(0x06, 0x06);	// RF_SETUP: 1MBps at 0dBm
-	nrf_cmd(0x07, 0x3E);	// STATUS: Clear TX_DS and MAX_RT
+	// nRF24L01+ must be in a standby or power down mode before writing to the configuration registers.
+
+	// CONFIG: MASK_RX_DR=0, MASK_TX_DS=0, MASK_MAX_RT=1, EN_CRC=0, EN_CRC=0, PWR_UP=1, PRIM_RX=0
+	// Reflect TX_DS as active low interrupt on the IRQ pin
+	nrf_cmd(0x00, 0x12); // 0x12
+
+	// EN_AA: no auto-acknowledge
+	nrf_cmd(0x01, 0x00);
+
+	// EN_RXADDR: RX on pipe 0
+	nrf_cmd(0x02, 0x00);
+
+	// SETUP_AW: use a 4 byte address (default is 5 bytes)
+	nrf_cmd(0x03, 0x02);
+
+	// SETUP_RETR: no auto-retransmit (ARC=0)
+	nrf_cmd(0x04, 0x00);
+
+	// RF_SETUP: 1MBps at 0dBm
+	nrf_cmd(0x06, 0x06);
+
+	// STATUS: Clear TX_DS and MAX_RT
+	nrf_cmd(0x07, 0x3E);
+
 	//nrf_cmd(0x11, 0x20);	// RX_PW_P0: always RX 32 bytes
 	//nrf_cmd(0x11, 0x00);	// RX_PW_P0: set RX_PW_P0=0 (not used)
 	//nrf_cmd(0x1C, 0x00);	// DYNPD: no dynamic payloads
@@ -234,17 +251,17 @@ int main(void)
 		buf[L++] = 0x55;
 
 		// Channel hopping
-		if (++ch == sizeof(chRf))
-			ch = 0;
-
-		nrf_cmd(0x05, chRf[ch]); // set the channel, loop through chRf
-		nrf_cmd(0x07, 0x6E);	// clear flags
+		//if (++ch == sizeof(chRf))
+		//	ch = 0;
 
 		btLePacketEncode(buf, L, chRf[ch]);
 
-		// Clear RX and TX buffers before writing the payload
+		nrf_cmd(0x05, chRf[ch]); // set the channel, loop through chRf
+		nrf_cmd(0x07, 0x6E); // clear flags
+
+		// Clear RX, TX FIFO before writing the payload
 		nrf_simplebyte(0xE1); // FLUSH_RX TX_FIFO (0b11100001)
-		//nrf_simplebyte(0xE2); // FLUSH_RX RX_FIFO (0b11100010)
+		nrf_simplebyte(0xE2); // FLUSH_RX RX_FIFO (0b11100010)
 
 		// Write payload to the module
 		cbi(PORTA, PIN_nCS);
@@ -253,19 +270,10 @@ int main(void)
 			spi_byte(buf[i]);
 		sbi(PORTA, PIN_nCS);
 
-		nrf_cmd(0x00, 0x12); // TX on
-
 		// Toggle CE to send the buffer
 		sbi(PORTA, PIN_CE);	// Set CE
 		_delay_us(20); // Min 10us for TX to be sent
 		cbi(PORTA, PIN_CE); // Clear CE
-
-		_delay_us(50);
-		//nrf_simplebyte(0x07); // Check the status register
-		//cbi(PORTA, PIN_nCS);
-		//spi_byte(0x07);
-		//spi_byte(0x00); // read the RESPONSE
-		//sbi(PORTA, PIN_nCS);
 
 		PORTA &= ~(1<<PIN_LED); // Turn off LED
 		_delay_ms(100);
