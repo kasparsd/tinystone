@@ -1,5 +1,7 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
+The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and [USBasp](http://www.fischl.de/usbasp/) programmer.
+
 
 ## BLE Advertising Packet Format
 
