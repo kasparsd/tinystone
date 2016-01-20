@@ -46,4 +46,4 @@ where Payload:
 
 ## Credits
 
-[Kaspars Dambis](http://kaspars.net)) based on the work by [Dmitry Grinberg](http://dmitry.gr) described in [Faking Bluetooth LE](http://dmitry.gr/index.php?r=05.Projects&proj=11.%20Bluetooth%20LE%20fakery).
+[Kaspars Dambis](http://kaspars.net) based on the work by [Dmitry Grinberg](http://dmitry.gr) described in [Faking Bluetooth LE](http://dmitry.gr/index.php?r=05.Projects&proj=11.%20Bluetooth%20LE%20fakery).
