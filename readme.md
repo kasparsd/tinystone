@@ -1,9 +1,16 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
-The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and [USBasp](http://www.fischl.de/usbasp/) programmer.
+Create [Eddystone Beacons](https://github.com/google/eddystone) using nRF24l01+ radio modules and simple ATTiny microcontrollers.
 
+![Eddystone Beacon in iOS Notification Center](http://kaspars.net/wp-content/uploads/2016/01/eddystone-beacon-iphone-notification-center.jpg)
 
-## BLE Advertising Packet Format
+## Building
+
+The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and the [USBasp](http://www.fischl.de/usbasp/) programmer.
+
+## Notes
+
+### BLE Advertising Packet Format
 
 BLE packet format:
 
@@ -22,7 +29,7 @@ where Payload:
 	Broadcast Address 6 bytes | Broadcast Data 0 - 31 bytes
 
 
-### Notes on BLE Advertising Packets
+### BLE Advertising Packets
 
 - Preamble is always `0xAA` for broadcast packets
 
@@ -35,7 +42,7 @@ where Payload:
 	- `ADV_SCAN_IND` (`0b0110`) - Scannable undirected advertising event
 
 
-## Notes on nRF24l01+
+### Using nRF24l01+ for BLE
 
 - In parallel to the SPI command word applied on the MOSI pin, the STATUS register is shifted serially out on the MISO pin.
 
