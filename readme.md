@@ -4,7 +4,7 @@ Create [Eddystone Beacons](https://github.com/google/eddystone) using nRF24l01+ 
 
 ![Eddystone Beacon in iOS Notification Center](http://kaspars.net/wp-content/uploads/2016/01/eddystone-beacon-iphone-notification-center.jpg)
 
-## Building
+## Build
 
 The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and the [USBasp](http://www.fischl.de/usbasp/) programmer.
 
