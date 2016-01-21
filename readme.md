@@ -6,7 +6,7 @@ Create [Eddystone Beacons](https://github.com/google/eddystone) using nRF24l01+ 
 
 ## Build
 
-The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and the [USBasp](http://www.fischl.de/usbasp/) programmer.
+The `Makefile` currently includes configuration for [ATTiny44](http://www.atmel.com/devices/ATTINY44.aspx) and an [USBasp](http://www.fischl.de/usbasp/) programmer.
 
 ## Notes
 
