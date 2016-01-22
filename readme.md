@@ -1,6 +1,6 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
-Create [Eddystone Beacons](https://github.com/google/eddystone) using nRF24l01+ radio modules and simple ATTiny microcontrollers.
+Create [Eddystone Beacons](https://github.com/google/eddystone) for the [Physical Web](https://github.com/google/physical-web) using nRF24l01+ radio modules and simple ATTiny microcontrollers.
 
 ![Eddystone Beacon in iOS Notification Center](http://kaspars.net/wp-content/uploads/2016/01/eddystone-beacon-iphone-notification-center.jpg)
 
