@@ -24,7 +24,7 @@ where Header:
 
 	PDU type 4 bits | RFU 2 bits | TxAdd 1 bit | RxAdd 1 bit | Length 6 bits | RFU 6 bits
 
-where Payload:
+and Payload:
 
 	Broadcast Address 6 bytes | Broadcast Data 0 - 31 bytes
 
@@ -48,7 +48,14 @@ where Payload:
 
 - We need to use the _non-Enhanced_ ShockBurst packet format to mimic the BLE packets. Set the register `EN_AA = 0x00` and `ARC = 0` to disable Enhanced ShockBurst.
 
-		Preamble 1 byte | Address 3-5 byte | Payload 1-32 byte | CRC 1-2 byte
+Here is the nRF24l01+ packet format -- notice the similarity with the BLE packet format above:
+
+	Preamble 1 byte | Address 3-5 byte | Payload 1-32 byte | CRC 1-2 byte
+
+
+### Eddystone-URL Packets
+
+[Eddystone-URL](https://github.com/google/eddystone/tree/master/eddystone-url) defines the structure of the 32 byte payload inside the BLE advertising packet.
 
 
 ## Credits
