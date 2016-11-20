@@ -25,13 +25,13 @@ The non-connectable undirected advertising packets use the following values:
 - Preamble is `0xAA`
 - Access address is `0x8E89BED6`
 - PDU header:
-  - PDU Type `ADV_NONCONN_IND` or `0b0010`
-	- Payload length
+    - PDU Type `ADV_NONCONN_IND` or `0b0010`
+    - Payload length
 - PDU MAC Address
 - PDU Data
-  - Advertisement Flags (3 bytes)
-	- Advertisement Services Header (4 bytes)
-	- Advertisement Frames (the actual Eddystone frame)
+    - Advertisement Flags (3 bytes)
+    - Advertisement Services Header (4 bytes)
+    - Advertisement Frames (the actual Eddystone frame)
 - CRC
 
 
