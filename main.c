@@ -207,7 +207,7 @@ int main(void)
 		PORTA |= (1<<PIN_LED); // Turn on LED
 
 		// Create our ADV_NONCONN_IND packet
-		// 2 byte header + 6 byte address + 3 byte LE header + 4 byte Eddystone header + 17 byte payload
+		// 2 byte header + 6 byte address + 3 byte LE header + 6 byte Eddystone header + 12 encoded URL + 3 byte CRC
 
 		L = 0;
 		plen = 9; // Payload length, MAC + BLE header by default

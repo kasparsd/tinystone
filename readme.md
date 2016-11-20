@@ -1,6 +1,6 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
-Create [Eddystone Beacons](https://github.com/google/eddystone) for the [Physical Web](https://github.com/google/physical-web) using nRF24l01+ radio modules and simple ATTiny microcontrollers. Broadcast up 13 byte encoded URLs.
+Create [Eddystone Beacons](https://github.com/google/eddystone) for the [Physical Web](https://github.com/google/physical-web) using nRF24l01+ radio modules and simple ATTiny microcontrollers. Broadcast up 12 byte encoded URLs.
 
 ![Eddystone Beacon in iOS Notification Center](http://kaspars.net/wp-content/uploads/2016/01/eddystone-beacon-iphone-notification-center.jpg)
 
@@ -55,7 +55,7 @@ which leaves us with 18 bytes for the actual Eddystone frame payload.
 
 [Eddystone](https://github.com/google/eddystone) defines the structure of the Eddystone frames. For example, the [Eddystone-URL](https://github.com/google/eddystone/tree/master/eddystone-url) frame contains the following:
 
-	Frame Length 1 byte | Eddystone Service UUID 2 bytes | Frame Type 1 byte | TX Power 1 byte | URL Scheme 1 byte | Encoded URL 1-17 bytes
+	Service Data Length 1 byte | Service Data Type 1 byte | Eddystone Service UUID 2 bytes | Frame Type 1 byte | TX Power 1 byte | URL Scheme 1 byte | Encoded URL 1-17 bytes
 
 where
 
@@ -65,7 +65,7 @@ where
 - [URL Scheme](https://github.com/google/eddystone/tree/master/eddystone-url#url-scheme-prefix) is `0x03` for `https://`, for example
 - [Encoded URL](https://github.com/google/eddystone/tree/master/eddystone-url#eddystone-url-http-url-encoding)
 
-With 5 bytes used for the frame header we're left with only 13 bytes for the actual encoded URL.
+With 6 bytes used for the frame header we're left with only 12 bytes for the actual encoded URL.
 
 
 ### Notes on nRF24l01+ SPI Commands
