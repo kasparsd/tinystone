@@ -1,6 +1,6 @@
 # Eddystone Beacons Using nRF24l01+ and ATTiny
 
-Create [Eddystone Beacons](https://github.com/google/eddystone) for the [Physical Web](https://github.com/google/physical-web) using nRF24l01+ radio modules and simple ATTiny microcontrollers. Broadcast up 12 byte encoded URLs.
+Create [Eddystone Beacons](https://github.com/google/eddystone) for the [Physical Web](https://github.com/google/physical-web) using nRF24l01+ radio modules and simple ATTiny microcontrollers. Broadcast up 12 byte encoded URLs and/or Eddystone-TLM.
 
 ![Eddystone Beacon in iOS Notification Center](http://kaspars.net/wp-content/uploads/2016/01/eddystone-beacon-iphone-notification-center.jpg)
 
@@ -66,7 +66,7 @@ where
 - [URL Scheme](https://github.com/google/eddystone/tree/master/eddystone-url#url-scheme-prefix) is `0x03` for `https://`, for example
 - [Encoded URL](https://github.com/google/eddystone/tree/master/eddystone-url#eddystone-url-http-url-encoding)
 
-With 6 bytes used for the frame header we're left with only 12 bytes for the actual encoded URL.
+With 6 bytes used for the frame header we're left with only 12 bytes for the actual encoded URL. We're also able to broadcast the Eddystone-TLM frame which requires exactly 14 bytes.
 
 
 ### Notes on nRF24l01+ SPI Commands
