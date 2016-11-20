@@ -55,10 +55,11 @@ which leaves us with 18 bytes for the actual Eddystone frame payload.
 
 [Eddystone](https://github.com/google/eddystone) defines the structure of the Eddystone frames. For example, the [Eddystone-URL](https://github.com/google/eddystone/tree/master/eddystone-url) frame contains the following:
 
-	Service Data Length 1 byte | Service Data Type 1 byte | Eddystone Service UUID 2 bytes | Frame Type 1 byte | TX Power 1 byte | URL Scheme 1 byte | Encoded URL 1-17 bytes
+	Data Length 1 byte | Data Type 1 byte | Eddystone Service UUID 2 bytes | Frame Type 1 byte | TX Power 1 byte | URL Scheme 1 byte | Encoded URL 1-17 bytes
 
 where
 
+- Data Type "Service Data" is `0x16`
 - Eddystone Service UUID is `0xFEAA`
 - Frame type for Eddystone-URL is `0x10`
 - TX power is the received power at 0 meters in dBm and the value ranges from -100 dBm to +20 dBm to a resolution of 1 dBm
