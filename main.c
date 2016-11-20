@@ -169,7 +169,7 @@ int main(void)
 
 	// CONFIG: MASK_RX_DR=0, MASK_TX_DS=0, MASK_MAX_RT=1, EN_CRC=0, EN_CRC=0, PWR_UP=1, PRIM_RX=0
 	// Reflect TX_DS as active low interrupt on the IRQ pin
-	nrf_cmd(0x00, 0x12); // 0x12
+	nrf_cmd(0x00, 0x12);
 
 	// EN_AA: no auto-acknowledge
 	nrf_cmd(0x01, 0x00);
@@ -183,13 +183,14 @@ int main(void)
 	// SETUP_RETR: no auto-retransmit (ARC=0)
 	nrf_cmd(0x04, 0x00);
 
-	// RF_SETUP: 1MBps at 0dBm
+	// RF_SETUP: 1MBps at 0dBm (11.3mA)
 	nrf_cmd(0x06, 0x06);
 
 	// STATUS: Clear TX_DS and MAX_RT
 	nrf_cmd(0x07, 0x3E);
 
-	// Set TX address always, 0x8E89BED6 or "Bed6" for advertising packets
+	// Set TX_ADDR address to 0x8E89BED6 or "Bed6" for BLE advertising packets
+	// Note that the preamble is set automatically and using the same logic as BLE
 	buf[0] = 0x10 + 0x20; // 0x20 padding to specify the write register
 	buf[1] = swapbits(0x8E);
 	buf[2] = swapbits(0x89);
@@ -197,7 +198,7 @@ int main(void)
 	buf[4] = swapbits(0xD6);
 	nrf_manybytes(buf, 5);
 
-	// Set RX address, not used
+	// Set RX_ADDR_P0 address, not used
 	buf[0] = 0x0A + 0x20; // 0x20 padding to specify the write register
 	nrf_manybytes(buf, 5);
 
@@ -221,13 +222,13 @@ int main(void)
 		buf[L++] = MY_MAC_4;
 		buf[L++] = MY_MAC_5;
 
-		// Flags. CSS v5, Part A, § 1.3
+		// Advertisement Flags. CSS v5, Part A, § 1.3
 		buf[L++] = 0x02; // Length
 		buf[L++] = 0x01; // Flags data type value
 		buf[L++] = 0x06; // Flags data
 
-		// Length of Eddystone service + frame packet
-		plen += 12;
+		// Length of Eddystone service + frame packet, max 18
+		plen += 13;
 
 		buf[L++] = 11; // Length of service data
 		buf[L++] = 0x16; // Service Data data type value
