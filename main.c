@@ -213,7 +213,7 @@ int main(void)
 		plen = 9; // Payload length, MAC + BLE header by default
 
 		buf[L++] = 0x42; // PDU type, ADV_NONCONN_IND
-		buf[L++] = plen; // Default length of payload, update later
+		buf[L++] = plen; // Payload length, update later with the correct value
 
 		buf[L++] = MY_MAC_0;
 		buf[L++] = MY_MAC_1;
@@ -230,18 +230,19 @@ int main(void)
 		// Length of Eddystone service + frame packet, max 18
 		plen += 13;
 
-		buf[L++] = 11; // Length of service data
-		buf[L++] = 0x16; // Service Data data type value
-		buf[L++] = 0xAA; // 16-bit Eddystone UUID
-		buf[L++] = 0xFE; // ..
-		buf[L++] = 0x10; // Frame Type: URL
+		buf[L++] = 12; // Length of data
+		buf[L++] = 0x16; // Data type "Service Data"
+		buf[L++] = 0xAA; // First part of the Eddystone Service UUID of 0xFEAA
+		buf[L++] = 0xFE; // Second part of the Eddystone Service UUID of 0xFEAA
+		buf[L++] = 0x10; // Frame Type: Eddystone-URL
 		buf[L++] = 0x00; // TX Power
 		buf[L++] = 0x03; // URL Scheme, https://
 		buf[L++] = 'e';
 		buf[L++] = 'd';
 		buf[L++] = 's';
 		buf[L++] = 't';
-		buf[L++] = 0x0b; // Domain extension, .info
+		buf[L++] = 0x04; // Domain extension, .info
+		buf[L++] = '0';
 
 		// CRC start value: 0x555555
 		buf[L++] = 0x55;
